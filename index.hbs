@@ -1,0 +1,144 @@
+<head>
+  <link
+    href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div class="flex flex-col mb-8 md:mb-auto gap-3.5 flex-1 p-4 mt-16">
+    <h2
+      class="flex gap-3 items-center m-auto text-lg font-bold md:flex-col md:gap-2"
+    >
+      <svg
+        stroke="currentColor"
+        fill="none"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-6 w-6"
+        height="1em"
+        width="1em"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+        ></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      Limitations
+    </h2>
+
+    <ul
+      id="list_container"
+      class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto"
+    >
+      <script>
+          function getVideo(path) {
+            var video_path = "/public/" + path;
+            var newWindow = window.open();
+            newWindow.document.write(
+                    `<html>
+                <head>
+                  <title>Video Player</title>
+                  <style>
+                    body {
+                      margin: 0;
+                      padding: 0;
+                      overflow: hidden;
+                    }
+                    video {
+                      width:100% ;
+                    }
+                    div.cent {
+                    text-align: center;
+
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div id="cent">
+                    <center>
+                      <video width="600px" height="300px" controls>
+                        <source src="${video_path}" type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </center>
+                  </div>
+                </body>
+              </html>`
+            );
+          }
+          function getFiles(f) {
+            var path = "/files/" + f;
+            fetch(path)
+              .then(function (response) {
+                if (response.ok) {
+                  // If the response is JSON data
+                  if (
+                    response.headers
+                      .get("content-type")
+                      .includes("application/json")
+                  ) {
+                    return response.json(); // Parse and return the JSON data
+                  } else {
+                    return response.blob(); // If the response is a file
+                  }
+                } else {
+                  throw new Error(
+                    "Request failed with status " + response.status
+                  );
+                }
+              })
+              .then(function (data) {
+              
+                console.log(data);
+                var listcontainer = document.getElementById("list_container");
+                listcontainer.innerHTML = "";
+
+                data.files.forEach(function (entry) {
+                  console.log("data.files: ",entry)
+                  if(entry.Path != ""){
+                    var list = document.createElement("li");
+                    list.textContent = entry.File_name;
+                    list.className ="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md";
+                     list.onclick = function () {
+                        getVideo(entry.Path);
+                      };
+
+                    listcontainer.appendChild(list);
+                    return
+                  }
+                  var list = document.createElement("li");
+                  list.textContent = entry.File_name;
+                  list.className ="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md";
+                  list.onclick = function () {
+                    getFiles(entry.Folder);
+                  };
+
+                  listcontainer.appendChild(list);
+                });
+              });
+          }
+          var folders =JSON.parse(`{{ .folders }}`)
+          console.log(folders);
+
+          folders.forEach((element) => {
+            var listItem = `<li onclick="getFiles('${element.folders}')" class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">${element.folders}</li>`;
+              document.writeln(listItem);
+          });
+      </script>
+      <li class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
+        Limited operating hours
+      </li>
+      <li class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
+        Limited warranty coverage
+      </li>
+      <li class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
+        Limited geographic coverage
+      </li>
+    </ul>
+  </div>
+</body>
