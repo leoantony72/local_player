@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -36,32 +37,34 @@ func main() {
 
 	r.GET("/", getFolders)
 	r.GET("/files/:folder", getFilesFromFolder)
-	r.GET("/file/:name", getFile)
+	r.GET("/search/:name", getFile)
 
 	r.Run("0.0.0.0:800")
 }
 
 func getFile(c *gin.Context) {
 	file_name := c.Param("name")
+	name := "%" + file_name + "%"
+	rows, _ := sdb.Query("SELECT * FROM movies WHERE file_name LIKE ?;", name)
+	defer rows.Close()
 
-	row, _ := sdb.Query("SELECT path FROM movies WHERE file_name = ?;", file_name)
-	defer row.Close()
-	data := Metadata{}
-	for row.Next() {
-
-		err := row.Scan(&data.Path)
+	data := []Metadata{}
+	for rows.Next() {
+		i := Metadata{}
+		err := rows.Scan(&i.File_name, &i.Path, &i.Folder)
 		if err != nil {
 			fmt.Println(err)
 		}
+		data = append(data, i)
 	}
 
-	c.JSON(200, gin.H{"path": data})
+	c.JSON(200, gin.H{"files": data})
 }
 
 func getFilesFromFolder(c *gin.Context) {
 	folder_name := c.Param("folder")
 	folder_name = folder_name + "%"
-	fmt.Println("FOLDER: ", folder_name)
+	// fmt.Println("FOLDER: ", folder_name)
 	rows, _ := sdb.Query("SELECT * FROM movies WHERE folder LIKE ?", folder_name)
 	defer rows.Close()
 	data := []Metadata{}
