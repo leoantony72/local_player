@@ -1,233 +1,329 @@
-<head>
-  <link
-    href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="styles.css"/>
-</head>
-<body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Video Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="icon"
+      href="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/1f4fa.png"
+    />
+    <style>
+      /* Basic page background and text selection styling */
+      body { background: #f8fafc; }
+      ::selection { background: #3b82f6; color: #fff }
+      /* Custom colors for folder and video icons */
+      .folder-icon { color: #f59e42; } /* Orange for folders */
+      .video-icon { color: #94a3b8; } /* Grayish-blue for videos */
+      /* Custom Scrollbar for better aesthetics across browsers */
+      ::-webkit-scrollbar { width: 7px; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
 
-  <div class="flex flex-col mb-8 md:mb-auto gap-3.5 flex-1 p-4 mt-16">
-  <form id="search_form" class="flex items-center">
-     <label for="simple-search" class="sr-only">Search</label>
-     <div class="relative w-full">
-       <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-         <svg
-           aria-hidden="true"
-           class="w-5 h-5 text-gray-500 dark:text-gray-400"
-           fill="currentColor"
-           viewBox="0 0 20 20"
-           xmlns="http://www.w3.org/2000/svg"
-         >
-           <path
-             fill-rule="evenodd"
-             d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-             clip-rule="evenodd"
-           ></path>
-         </svg>
-       </div>
-       <input
-         type="text"
-         id="search_input"
-         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-         placeholder="Search"
-         required
-       />
-     </div>
-     <button
-       type="submit"
-       class="p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-     >
-       <svg
-         class="w-5 h-5"
-         fill="none"
-         stroke="currentColor"
-         viewBox="0 0 24 24"
-         xmlns="http://www.w3.org/2000/svg"
-       >
-         <path
-           stroke-linecap="round"
-           stroke-linejoin="round"
-           stroke-width="2"
-           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-         ></path>
-       </svg>
-       <span class="sr-only">Search</span>
-     </button>
-   </form>
-    <h2
-      class="flex gap-3 items-center m-auto text-lg font-bold md:flex-col md:gap-2"
+      /* REMOVED: Plyr specific styles */
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 font-sans"
+  >
+    <header
+      class="sticky top-0 z-10 bg-white bg-opacity-95 shadow-md py-5 mb-6"
     >
-      <svg
-        stroke="currentColor"
-        fill="none"
-        stroke-width="1.5"
-        viewBox="0 0 24 24"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-6 w-6"
-        height="1em"
-        width="1em"
-        xmlns="http://www.w3.org/2000/svg"
+      <div class="max-w-2xl mx-auto flex items-center justify-between px-5">
+        <div class="flex items-center gap-2">
+          <svg
+            class="h-8 w-8 text-blue-600"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          ><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /><circle
+              cx="9"
+              cy="9"
+              r="7"
+            /></svg>
+          <span
+            class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight"
+            >My Video Library</span
+          >
+        </div>
+        <a
+          href="https://github.com/"
+          target="_blank"
+          class="hidden md:inline-block opacity-20 hover:opacity-80 transition-opacity"
+          ><svg class="h-7 w-7" fill="#24292f" viewBox="0 0 24 24"><path
+                d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.2.8-.6v-2c-3.4.7-4.1-1.6-4.1-1.6-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1 0 1.7 1 1.7 1 .9 1.3 2.3.9 2.9.7.1-.7.4-1 .7-1.3-2.7-.3-5.6-1.4-5.6-6.2 0-1.4.5-2.5 1.2-3.4-.1-.3-.6-1.7.1-3.5 0 0 1-.3 3.3 1.2A11.5 11.5 0 0112 6.5c1 0 2.1.1 3.1.3 2.3-1.5 3.3-1.2 3.3-1.2.7 1.8.3 3.2.1 3.5.8.9 1.2 2.1 1.2 3.4 0 4.8-2.9 5.9-5.6 6.2.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0012 .5z"
+              /></svg></a
+        >
+      </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-3 md:px-0">
+      <form
+        id="search_form"
+        class="flex mb-6 shadow-lg rounded-lg overflow-hidden border border-gray-200 bg-white/90"
       >
-        <path
-          d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
-        ></path>
-        <line x1="12" y1="9" x2="12" y2="13"></line>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      Files
-    </h2>
+        <input
+          id="search_input"
+          type="text"
+          placeholder="Search videos..."
+          class="w-full appearance-none px-4 py-3 text-lg outline-none bg-transparent text-gray-600 placeholder-gray-400"
+        />
+        <button
+          type="submit"
+          class="bg-blue-600 hover:bg-blue-700 px-5 py-2 text-white text-lg font-medium transition-colors"
+        >Search</button>
+      </form>
 
-    <ul
-      id="list_container"
-      class="flex flex-col gap-3.5 w-full sm:max-w-md m-auto"
-    >
-      <script>
-          function search(f) {
-          var path = "/search/" + f;
-          fetch(path)
-            .then(function (response) {
-              if (response.ok) {
-                // If the response is JSON data
-                if (response.headers.get("content-type").includes("application/json")) {
-                  return response.json(); // Parse and return the JSON data
-                } else {
-                  return response.blob(); // If the response is a file
-                }
-              } else {
-                throw new Error("Request failed with status " + response.status);
-              }
-            })
-            .then(function (data) {
-              var listcontainer = document.getElementById("list_container");
-              listcontainer.innerHTML = "";
-              var files = data.files
+      <nav
+        id="breadcrumb"
+        class="flex flex-wrap gap-2 md:gap-1 items-center mb-2 text-sm text-blue-900"
+      ></nav>
 
-              files.forEach(function (entry) {
-                var list = document.createElement("li");
-                list.textContent = entry.File_name;
-                list.className = "w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md";
-                list.onclick = function () {
-                  getVideo(entry.Path);
-                };
+      <ul
+        id="list_container"
+        class="flex flex-col gap-3 rounded-xl bg-white/80 p-3 min-h-[100px] shadow-sm"
+      ></ul>
+    </main>
 
-                listcontainer.appendChild(list);
-              });
-            });
-        }
+    <footer class="text-center text-xs text-gray-400 mt-4 py-4">
+      Made with
+      <span class="text-red-400">♥️</span>
+      using Go, Gin & TailwindCSS
+    </footer>
 
-        document.addEventListener("DOMContentLoaded", function () {
-          var searchForm = document.getElementById("search_form");
-          var searchInput = document.getElementById("search_input");
+    <script>
+      let cwd = "."; // Global variable for Current Working Directory
 
-          searchForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-            var searchTerm = searchInput.value.trim();
-            if (searchTerm !== "") {
-              search(searchTerm);
-            }
-          });
-        });
-          function getVideo(path) {
-            var video_path = "/public/" + path;
-            var newWindow = window.open();
-            newWindow.document.write(
-                    `<html>
-                <head>
-                  <title>Video Player</title>
-                  <style>
-                    body {
-                      margin: 0;
-                      padding: 0;
-                      overflow: hidden;
-                    }
-                    video {
-                      width:100% ;
-                    }
-                    div.cent {
-                    text-align: center;
-
-                    }
-                  </style>
-                </head>
-                <body>
-                  <div id="cent">
-                    <center>
-                      <video width="600px" height="300px" controls>
-                        <source src="${video_path}" type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    </center>
-                  </div>
-                </body>
-              </html>`
+      /**
+       * Renders the breadcrumb navigation based on the current folder path.
+       * @param {string} path - The current folder path.
+       */
+      function renderBreadcrumb(path) {
+        const bc = document.getElementById("breadcrumb");
+        if (!bc) { console.error("Error: Breadcrumb element not found!"); return; }
+        bc.innerHTML = "";
+        const sep = `<svg class="inline w-4 h-4 mx-1 text-gray-400" fill="none"
+          stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7
+          7-7 7"/></svg>`;
+        const parts = path === "." ? [] : path.split("/");
+        const crumbs = [];
+        crumbs.push(
+          `<a href='#' class="hover:underline font-semibold" onclick="renderFolder('.')">Home</a>`
+        );
+        let sofar = [];
+        parts.forEach((part, idx) => {
+          if (part === "") return;
+          sofar.push(part);
+          const currentPath = sofar.join("/");
+          if (idx === parts.length - 1) {
+            crumbs.push(`<span class="text-blue-500 font-bold">${part}</span>`);
+          } else {
+            crumbs.push(
+              `<a href='#' class="hover:underline" onclick="renderFolder('${currentPath}')">${part}</a>`
             );
           }
-          function getFiles(f) {
-            var path = "/files/" + f;
-            fetch(path)
-              .then(function (response) {
-                if (response.ok) {
-                  // If the response is JSON data
-                  if (
-                    response.headers
-                      .get("content-type")
-                      .includes("application/json")
-                  ) {
-                    return response.json(); // Parse and return the JSON data
-                  } else {
-                    return response.blob(); // If the response is a file
-                  }
-                } else {
-                  throw new Error(
-                    "Request failed with status " + response.status
-                  );
-                }
-              })
-              .then(function (data) {
-                var listcontainer = document.getElementById("list_container");
-                listcontainer.innerHTML = "";
+        });
+        bc.innerHTML = crumbs.join(sep);
+      }
 
-                data.files.forEach(function (entry) {
-                  if(entry.Path != ""){
-                    var list = document.createElement("li");
-                    list.textContent = entry.File_name;
-                    list.className ="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md";
-                     list.onclick = function () {
-                        getVideo(entry.Path);
-                      };
+      /**
+       * Fetches and renders the content (subfolders and video files) for a given folder path.
+       * @param {string} folder - The folder path to retrieve content for.
+       */
+      function renderFolder(folder) {
+        cwd = folder;
+        renderBreadcrumb(folder);
 
-                    listcontainer.appendChild(list);
-                    return
-                  }
-                  var list = document.createElement("li");
-                  list.textContent = entry.File_name;
-                  list.className ="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md";
-                  list.onclick = function () {
-                    getFiles(entry.Folder);
-                  };
+        fetch("/api/folder/" + encodeURIComponent(folder))
+          .then((res) => {
+            if (!res.ok) {
+              console.error(`HTTP error! Status: ${res.status} for folder: ${folder}. Response text: ${res.statusText}`);
+              return res.json().then(err => { throw new Error(err.message || 'Server error occurred.'); });
+            }
+            return res.json();
+          })
+          .then((data) => {
+            const lc = document.getElementById("list_container");
+            if (!lc) { console.error("Error: List container element not found!"); return; }
+            lc.innerHTML = "";
 
-                  listcontainer.appendChild(list);
+            // Render "Back" button
+            if (data.cwd !== ".") {
+                const backPath = (data.parent === ".." || data.parent === "") ? "." : data.parent;
+                lc.innerHTML += `<li class="group flex items-center space-x-2 bg-gray-50
+                      hover:bg-blue-50 text-blue-400 font-medium px-5 py-3 rounded
+                      cursor-pointer transition"
+                      onclick="renderFolder('${backPath}')">
+                      <svg class="w-5 h-5 group-hover:text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24
+                      24"><path d="M15 19l-7-7 7-7"/></svg>
+                      <span>Back</span>
+                      </li>`;
+            }
+
+            // Render Subfolders
+            if (data.folders && data.folders.length > 0) {
+                data.folders.forEach((f) => {
+                    const nextFolderPath = folder === "." ? f : `${folder}/${f}`;
+                    lc.innerHTML += ` <li class="group
+                        flex items-center gap-4 px-5 py-3 bg-gradient-to-r from-yellow-100
+                        to-yellow-50 shadow-sm rounded cursor-pointer transition
+                        hover:from-blue-100/60 hover:to-blue-50/50"
+                        onclick="renderFolder('${nextFolderPath}')">
+                        <svg class="folder-icon w-7 h-7 group-hover:text-blue-500 transition"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24
+                        24"><path d="M3 7v12a2 2 0 002 2h14a2 2 0 002-2V7"/><path d="M3 7l7-5h4l7
+                        5"/></svg> <span class="font-semibold text-lg">${f}</span> </li>`;
                 });
-              });
-          }
-          var folders =JSON.parse(`{{ .folders }}`)
+            }
 
-          folders.forEach((element) => {
-            var listItem = `<li onclick="getFiles('${element.folders}')" class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">${element.folders}</li>`;
-              document.writeln(listItem);
+            // Render Video Files
+            if (data.files && data.files.length > 0) {
+                data.files.forEach((v) => {
+                    lc.innerHTML += ` <li class="group flex
+                        items-center gap-4 px-5 py-3 bg-white shadow rounded cursor-pointer
+                        hover:bg-blue-50 transition"
+                        onclick="playVideo('${encodeURIComponent(v.Path)}')">
+                        <svg class="video-icon w-6 h-6 group-hover:text-blue-500 transition"
+                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24
+                        24"><rect x="3" y="5" width="18" height="14" rx="2" /><polygon points="10
+                        9 15 12 10 15 10 9" /></svg> <span class="text-base md:text-lg
+                        group-hover:underline">${v.File_name}</span> <span
+                        class="ml-auto inline-block px-2 py-1 rounded text-xs font-medium
+                        bg-blue-100 text-blue-700">${v.Folder.replace(/^\.\//, '')}</span> </li>`;
+                });
+            }
+
+            // Display "Empty" message
+            if ((!data.folders || data.folders.length === 0) && (!data.files || data.files.length === 0)) {
+              lc.innerHTML += `<li class="py-6 text-center text-gray-400">Empty</li>`;
+            }
+          })
+          .catch(error => {
+              console.error("Error fetching folder content:", error);
+              const lc = document.getElementById("list_container");
+              if (lc) {
+                  lc.innerHTML = `<li class="py-6 text-center text-red-500">Error loading content: ${error.message}. Check console (F12) and server logs.</li>`;
+              }
           });
-      </script>
-      <li class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
-        Limited operating hours
-      </li>
-      <li class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
-        Limited warranty coverage
-      </li>
-      <li class="w-full bg-gray-100 dark:bg-white/5 p-3 rounded-md">
-        Limited geographic coverage
-      </li>
-    </ul>
-  </div>
-</body>
+      }
+
+      /**
+       * Plays a video in a new pop-up window using a basic HTML5 <video> tag.
+       * @param {string} relPath - The URL-encoded relative path to the video file.
+       */
+      function playVideo(relPath) {
+  const real = decodeURIComponent(relPath); // Human-readable path for display
+  const videoSrc = "/public/" + relPath; // URL accessible by the browser
+
+  // Open a new blank window.
+  // The third parameter defines window features (size, scrollbars, etc.).
+  const w = window.open("", "_blank", "width=800,height=600,scrollbars=yes,resizable=yes");
+  if (!w) {
+    alert("Please allow pop-ups for this site to play videos.");
+    return;
+  }
+
+  // Write HTML content directly into the new window.
+  w.document.write(`
+          <html>
+            <head>
+              <title>${real}</title>
+              <meta name='viewport' content='width=device-width,initial-scale=1'/>
+              <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+              <style>
+                html,body { background: #181828; margin:0; padding:0; height:100dvh;
+                display:flex;align-items:center;justify-content:center; } .vidbox {
+                max-width:96vw; width:100%; max-height:92vh; display:flex;
+                flex-direction:column; align-items:center; gap:1.25rem; } video {
+                width:100%; height:auto; background:#000; outline:none;
+                border-radius:1.2rem; box-shadow: 0 6px 32px #0f172a33; }
+
+                /* Mobile-specific styles for the video player */
+                @media (max-width: 768px) { /* Adjust breakpoint as needed for "mobile" */
+                    .vidbox {
+                        width: 320px; /* Fixed width for mobile */
+                        height: 240px; /* Fixed height for mobile */
+                        max-width: unset; /* Override max-width for mobile */
+                        max-height: unset; /* Override max-height for mobile */
+                    }
+                    video {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain; /* Ensures the video fits within the fixed dimensions */
+                    }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="vidbox">
+                <video src="${videoSrc}" controls autoplay playsinline></video>
+                <div class="text-sm mt-2 text-gray-200">${real}</div>
+              </div>
+            </body>
+          </html>
+        `);
+  w.document.close(); // Important for some browsers to render content written with document.write
+}
+
+      // --- Search Functionality ---
+      /**
+       * Handles the search form submission. Prevents default form submission and calls the search API.
+       * @param {Event} e - The submit event object.
+       */
+      document.getElementById("search_form").onsubmit = (e) => {
+        e.preventDefault(); // Prevent the default form submission behavior (which would reload the page)
+        const q = document.getElementById("search_input").value.trim(); // Get the trimmed search query
+        console.log("Search initiated for query:", q);
+
+        if (!q) {
+          renderFolder(cwd); // If query is empty, re-render current folder
+          return;
+        }
+
+        fetch("/api/search/" + encodeURIComponent(q))
+          .then((r) => {
+            if (!r.ok) {
+              console.error(`HTTP error! Status: ${r.status} for search: ${q}. Response text: ${r.statusText}`);
+              return r.json().then(err => { throw new Error(err.message || 'Server error occurred during search.'); });
+            }
+            return r.json();
+          })
+          .then((data) => {
+            const lc = document.getElementById("list_container");
+            if (!lc) { console.error("Error: List container element not found for search results!"); return; }
+
+            lc.innerHTML = `<li class='mb-3 text-gray-500'>🔎 Results for "<span
+          class="font-semibold text-blue-700">${q}</span>"</li>`;
+
+            if (!data.results || data.results.length === 0) {
+              lc.innerHTML += "<li class='py-5 text-center text-gray-400'>No results found.</li>";
+              return;
+            }
+
+            data.results.forEach((v) => {
+              lc.innerHTML += ` <li class="flex items-center gap-3 px-5 py-3 bg-white
+          shadow rounded cursor-pointer hover:bg-blue-50 transition"
+          onclick="playVideo('${encodeURIComponent(v.Path)}')">
+          <svg class="video-icon w-6 h-6" fill="none" stroke="currentColor"
+          stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18"
+          height="14" rx="2" /><polygon points="10 9 15 12 10 15 10 9" /></svg>
+          <span class="text-base md:text-lg">${v.File_name}</span> <span
+          class="ml-auto inline-block px-2 py-1 rounded text-xs font-medium
+          bg-blue-100 text-blue-700">${v.Folder.replace(/^\.\//, '')}</span> </li>`;
+            });
+          })
+          .catch(error => {
+              console.error("Error during search:", error);
+              const lc = document.getElementById("list_container");
+              if (lc) {
+                  lc.innerHTML = `<li class="py-6 text-center text-red-500">Error during search: ${error.message}. Check console (F12).</li>`;
+              }
+          });
+      };
+
+      // Initial page load: render content of the root folder when page loads.
+      window.onload = () => renderFolder(".");
+    </script>
+  </body>
+</html>
